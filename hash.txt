@@ -1,0 +1,43 @@
+#include <stdio.h>
+const int FLM = 30000;
+const int MOD = 10000;
+const int RLM = 11;
+
+int bCnt, fCnt;
+struct Food {
+	int fid, rn, price;
+	void alloc(int nfid, int nrn, int nprice){
+		fid = nfid, rn = nrn, price = nprice;
+	}
+	bool operator<(const Food& r)const {
+		if (price != r.price) return price < r.price;
+		return fid < r.fid;
+	}
+}food[FLM];
+int usedfid[FLM];
+
+struct PriorityQueue {
+	int heap[FLM], hn;
+	void init() {
+		hn = 0;
+	}
+	bool empty() { return hn == 0; }
+	int top() {
+
+	}
+};
+
+struct Node {
+	int fid, num;
+	Node* next;
+	Node* alloc(int nf, int nn, Node* cur) {
+		fid = nf, num = nn, next = cur;
+		return this;
+
+	}
+}buf[FLM], *htab[MOD];
+
+void postMenu(int foodID, int restaurant, int price) {
+	int hidx = foodID % MOD;
+	htab[hidx] = buf[bCnt++].alloc(foodID, ++fCnt, htab[hidx]);
+}
