@@ -1,5 +1,5 @@
 # Algorithm
-This is repository for Algorithm solving problem. Algorithm solving solutions are evolving to leverage lots of areas even like NAND Flash firmware code. So I strongly got the impression that all of the software developer should practice your algorithm programming skills then you will be a person who is good in a crisis, especially, when things go south. That's the reason why I create this repository and 
+This is repository for Algorithm solving problem. Algorithm solving solutions are evolving to leverage lots of areas even like NAND Flash firmware code. So I strongly got the impression that all of the software developer should practice your algorithm programming skills then you will be a person who is good in a crisis, especially, when things go south. That's the reason why I create this repository and cosume the results.
 
 ## contents
 1. Hash
