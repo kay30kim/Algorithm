@@ -1,0 +1,101 @@
+#define MAXN    1000
+#define MAXM    100
+#define MAXT    10
+#define NUM     50000
+#define HASH    10007
+typedef long long ll;
+ 
+int cnt[MAXN], mcnt[MAXN];
+int follow[MAXN][MAXN], mids[MAXN][MAXM];
+ 
+struct NODE {
+    int mid, score;
+    NODE* next;
+} nodetable[NUM * MAXT], table[HASH];
+int alloc;
+#define newNODE() &(nodetable[alloc++])
+ll hash[HASH];
+ 
+void init()
+{
+    alloc = 0;
+    for (register int i = 0; i < MAXN; i++) {
+        cnt[i] = mcnt[i] = 0;
+        follow[i][cnt[i]++] = i;
+    }
+    for (register int i = 0; i < HASH; i++) {
+        table[i].next = 0;
+    }
+}
+ 
+void createMessage(int msgID, int userID, char msgData[])
+{
+    mids[userID][mcnt[userID]++] = alloc;
+    register int score = ((((msgData[0] - '0') << 20) + ((msgData[1] - '0') << 16) + ((msgData[3] - '0') << 12) +
+        ((msgData[4] - '0') << 8) + ((msgData[6] - '0') << 4) + (msgData[7] - '0')) << 10) - userID;
+    register ll h = 0;
+    for (register char* c = msgData + 9; ; c++) {
+        if (*c == '#') h = 0;
+        else if (*c == ' ' || *c == '\0') {
+            for (register int key = h % HASH; ; key = (key + 1) % HASH) {
+                if (table[key].next && hash[key] != h) continue;
+                if (table[key].next == 0) hash[key] = h;
+                nodetable[alloc] = { msgID, score, 0 };
+                register NODE* newnode = newNODE();
+                for (register NODE* c = &table[key];; c = c->next) {
+                    if (c->next && newnode->score < c->next->score) continue;
+                    newnode->next = c->next;
+                    c->next = newnode;
+                    break;
+                }
+                break;
+            }            
+            if (*c == '\0') break;
+        }
+        else h = (h << 5) + *c - 'a' + 1;
+    }
+}
+ 
+void followUser(int userID1, int userID2)
+{
+    follow[userID1][cnt[userID1]++] = userID2;
+}
+ 
+int searchByHashtag(char tagName[], int retIDs[])
+{
+    register int ans = 0;
+    register ll h = 0;
+    for (register char* c = tagName + 1; *c; c++)  h = (h << 5) + *c - 'a' + 1;
+    for (register int key = h % HASH; hash[key]; key = (key + 1) % HASH) {
+        if (hash[key] != h) continue;
+        for (register NODE* c = table[key].next; c && ans < 5; c = c->next) {
+            retIDs[ans++] = c->mid;
+        }
+        break;
+    }
+    return (ans < 5 ? ans : 5);
+}
+ 
+#define SWAP(a,b) {int temp = a; a = b; b = temp;}
+int score[NUM]; int ids[NUM];
+int getMessages(int userID, int retIDs[])
+{
+    register int ans = 0;
+    for (register int n = 0; n < cnt[userID]; n++) {
+        register int uid = follow[userID][n];
+        for (register int i = 0; i < mcnt[uid]; i++) {
+            int mid = mids[uid][i];
+            score[ans] = nodetable[mid].score;
+            ids[ans++] = nodetable[mid].mid;
+        }
+    }
+    for (register int i = 0; i < (ans < 5 ? ans : 5); i++) {
+        register int idx = i;
+        for (register int n = i + 1; n < ans; n++) {
+            if (score[idx] < score[n]) idx = n;
+        }
+        SWAP(score[i], score[idx]); SWAP(ids[i], ids[idx]);
+        retIDs[i] = ids[i];
+    }
+    return (ans < 5 ? ans : 5);
+}
