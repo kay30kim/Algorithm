@@ -9,6 +9,7 @@
  
 typedef unsigned long long ULL;
  
+
 int mstrcmp(const char *a, const char *b)
 {
     int i;
