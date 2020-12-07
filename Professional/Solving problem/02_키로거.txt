@@ -1,0 +1,19 @@
+struct node {
+	char data;
+	node* prev;
+	node* next;
+	void alloc(char _data,node* _prev, node* _next) {
+		data = _data;
+		prev = _prev;
+		next = _next;
+		prev->next = next->prev = this;
+	}
+	void pop() {
+		prev->next = next;
+		next->prev = prev;
+	}
+}*cur,*head, *tail, buf[1000000];
+int bufcnt;
+void push(int data) {
+	buf[bufcnt++].alloc(str[i], cur->prev, cur->next);
+}

@@ -1,0 +1,45 @@
+#include <stdio.h>
+struct node {
+	int data;
+	node* next;
+	node* alloc(int _data, node* _next) {
+		data = _data, next = _next;
+		return this;
+	}
+};
+node* head, buf[100]; // 입력의 개수만큼 buf필요
+int bufcnt; // 버퍼를 얼만큼 썼는지 알려주는거
+int cnt = 0;
+void push(int data) {
+	head = buf[bufcnt++].alloc(data, head);
+	cnt++;
+}
+void pop() {
+	if (cnt == 0) {
+		printf("empty\n");
+		return;
+	}
+	printf("%d\n", head->data);
+	head = head->next;
+	cnt--;
+}
+int main() {
+	int n, num;
+	char cmd;
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) {
+		scanf(" %c", &cmd);
+		if (cmd == 'i') {
+			scanf(" %d", &num);
+			push(num);
+
+		}
+		else if (cmd == 'o') {
+			pop();
+		}
+		else {
+			printf("%d\n", cnt);
+		}
+	}
+	return 0;
+}
