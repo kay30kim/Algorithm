@@ -1,3 +1,8 @@
+#include <stdio.h>
+const int MAX = 1000005;
+
+char str[MAX];
+int bufcnt;
 struct node {
 	char data;
 	node* prev;
@@ -12,8 +17,39 @@ struct node {
 		prev->next = next;
 		next->prev = prev;
 	}
-}*cur,*head, *tail, buf[1000000];
-int bufcnt;
-void push(int data) {
-	buf[bufcnt++].alloc(str[i], cur->prev, cur->next);
+}*cur,*head, *tail, buf[MAX];
+//void push(int data) {
+//	buf[bufcnt++].alloc(str[i], cur->prev, cur->next);
+//}
+int main() {
+	int T;
+	head = buf, tail = buf + 1;
+	scanf("%d", &T);
+	while (T--) {
+		bufcnt = 2;
+		head->next = tail;
+		tail->prev = head;
+		cur = tail;
+		scanf("%s", str);
+		for (int i = 0; str[i]; i++) {
+			if (str[i] == '<') {
+				if (cur->prev != head) cur = cur->prev;
+			}
+			else if (str[i] == '>') {
+				if (cur != tail) cur = cur->next;
+			}
+			else if (str[i] == '-') {
+				if (cur->prev != head) cur->prev->pop();
+			}
+			else {
+				buf[bufcnt++].alloc(str[i], cur->prev, cur);
+			}
+		}
+		for (node* p = head->next; p != tail; p = p->next) {
+			printf("%c", p->data);
+		}
+		printf("\n");
+	}
+	
+	return 0;
 }

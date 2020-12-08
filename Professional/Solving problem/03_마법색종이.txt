@@ -1,0 +1,48 @@
+#include <stdio.h>
+int H, W, N;
+int maxans = 0, minans = 1000000000, bn;
+struct block {
+	int sx, sy, ex, ey, color;
+	block* left, * right;
+	block* alloc(int _sx, int _sy, int _ex, int _ey, int _color) {
+		sx = _sx, sy = _sy, ex = _ex, ey = _ey, color = _color;
+		left = right = 0;
+		return this;
+	}
+	void push(int x, int y) {
+		if (left == 0) {
+			if (color == 1) {
+				left = buf[bn++].alloc(sx, sy, x, ey, 0);
+				right = buf[bn++].alloc(x, sy, ex, ey, 0);
+			}
+			else {
+				left = buf[bn++].alloc(sx, sy, ex, y, 1);
+				right = buf[bn++].alloc(sx, y, ex, ey, 1);
+			}
+		}
+		if (x < left->ex && y < left->ey) left->push(x, y);
+		else right->push(x, y);
+	}
+	void area() {
+		if (left == 0) {
+			int area = (ex - sx) * (ey - sy);
+			if (maxans < area) maxans = area;
+			if (minans > area) minans = area;
+			return;
+		}
+		left->area();
+		right->area();
+	}
+}buf[60001], *root;
+int main() {
+	scanf("%d %d %d", &H, &W, &N);
+	root = buf[bn++].alloc(0, 0, H, W, 0);
+	for (int i = 0; i < N; i++) {
+		int x, y;
+		scanf("%d%d", &x, &y);
+		root->push(x, y);
+	}
+	root->area();
+	printf("%d %d\n", maxans, minans);
+	return 0;
+}
