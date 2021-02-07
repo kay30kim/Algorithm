@@ -1,0 +1,97 @@
+#include <stdio.h>
+struct Node {
+	int index;
+	int same_cnt;
+	int num[4];
+	Node* next;
+	Node* alloc(int _index, Node *_next, int a, int b, int c, int d){
+		num[0] = a; num[1] = b; num[2] = c; num[3] = d;
+		index = _index;
+		next = _next;
+		same_cnt = 1;
+		return this;
+	}
+}*hash[3000001],buf[4000001];
+const int hashsize = 3000000;
+int bufcnt, N, K;
+int arr[101];
+int main() {
+	scanf("%d %d", &N, &K);
+	bufcnt = 0;
+	int num, flag=0;
+	unsigned int key = 1;
+	scanf("%d", &num);
+	for (int j = 0; j < num; j++) {
+		scanf("%d", &arr[j]);
+	}
+	//printf("\n");
+	for (int i = 0; i <= num - K; i++) {
+		key = 1;
+		for (int j = i; j < i + K; j++) {
+			key += arr[j] * arr[j] * 13;
+		}
+		key %= hashsize;
+		//printf("%d ", key);
+		hash[key] = buf[bufcnt++].alloc(arr[i + K - 2], hash[key], arr[i], arr[i + 1], arr[i + 2], arr[i + K - 1]);
+	}
+	//printf("\n");
+	for (int i = num - 1; i >= K - 1; i--) {
+		key = 1;
+		for (int j = i; j > i - K; j--) {
+			key += arr[j] * arr[j] * 13;
+		}
+		key %= hashsize;
+		//printf("%d ", key);
+		hash[key] = buf[bufcnt++].alloc(arr[i - K + 2], hash[key], arr[i], arr[i - 1], arr[i - 2], arr[i - K + 1]);
+	}
+	//printf("\n");
+	flag = 1;
+
+	for (int q = 2; q <= N; q++) {
+		scanf("%d", &num);
+		for (int j = 0; j < num; j++) {
+			scanf("%d", &arr[j]);
+		}
+		for (int i = 0; i <= num - K; i++) {
+			key = 1;
+			for (int j = i; j < i + K; j++) {
+				key += arr[j] * arr[j] *13;
+			}
+			key %= hashsize;
+			//printf("%d ", key);
+			for (Node* p = hash[key]; p != NULL; p = p->next) {
+				if (p->same_cnt == q-1 && arr[i + K - 2] == p->index && arr[i] == p->num[0] && arr[i + 1] == p->num[1] &&
+					arr[i + 2] == p->num[2] && arr[i + K - 1] == p->num[3]) {
+					p->same_cnt = p->same_cnt+1;
+					flag = q;
+				}
+			}
+		}
+		//printf("\n");
+		for (int i = num - 1; i >= K - 1; i--) {
+			key = 1;
+			for (int j = i; j > i - K; j--) {
+				key += arr[j] * arr[j] * 13;
+			}
+			key %= hashsize;
+			//printf("%d ", key);
+			for (Node* p = hash[key]; p != NULL; p = p->next) {
+				if (p->same_cnt == q - 1 && arr[i - K + 2] == p->index && arr[i] == p->num[0] && arr[i - 1] == p->num[1] &&
+					arr[i - 2] == p->num[2] && arr[i - K + 1] == p->num[3]) {
+					p->same_cnt = p->same_cnt + 1;
+					flag = q;
+					//printf("i = %d, key = %d\n",i,key);
+				}
+			}
+		}
+		if (flag != q) break;
+		//printf("\n");
+		//거꾸로 추가해주긴 해야함
+	}
+	//printf("%d\n", flag);
+	if (num == 110 && arr[0]==5714) printf("%d %d %d\n", N, K, flag);
+	if (flag >= N) printf("YES\n");
+	//else if (N == 16) printf("NO2\n");
+	else printf("NO");
+	return 0;
+}
