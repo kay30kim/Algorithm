@@ -1,0 +1,196 @@
+#define HSIZE 800
+#define MAXX 201
+bool mstrcmp(const char a[], const char b[]) {
+	int i;
+	for (i = 0; a[i] != '\0' && (a[i] == b[i]); ++i); //이게 잘못되어있었음
+	if ((a[i] - b[i]) == 0) return true;
+	else return false;
+}
+void mstrcpy(char dest[], const char src[]) {
+	int i = 0;
+	while (src[i] != '\0') { dest[i] = src[i]; i++; }
+	dest[i] = src[i];
+}
+struct Hash {
+	int aidx;
+	Hash* next;
+	Hash* alloc(int _aidx, Hash* _next) {
+		aidx = _aidx;
+		next = _next;
+		return this;
+	}
+}nhash[HSIZE],nbuf[MAXX];
+int aidx, nbfcnt;
+struct Arr {
+	char name[20];
+	int sex, par[2], mar, childN, child[MAXX];
+	void init(char _name[], int _sex, int existidx, int relation);
+}arr[MAXX];
+void Arr::init(char _name[], int _sex, int existidx, int relation) {
+	mstrcpy(name, _name);
+	sex = _sex;
+	par[0] = par[1] = mar = -1;
+	childN = 0;
+	if (relation == 0) { // 배우자
+		mar = existidx;
+		arr[existidx].mar = aidx;
+		for (register int i = 0; i < arr[existidx].childN; i++) {
+			child[childN++] = arr[existidx].child[i];
+			arr[child[i]].par[_sex] = aidx;
+		}
+		/*par[0] = arr[existidx].par[0];
+		par[1] = arr[existidx].par[1];*/ // 이건 아님
+	}
+	else if (relation == 1) { // 부모가 되는건데
+		if (sex == 0) {
+			if (arr[existidx].par[1] != -1) { // 만약 부모가 있다면
+				arr[arr[existidx].par[1]].mar = aidx; // 결혼 시켜주기
+				arr[aidx].mar = arr[existidx].par[1]; 
+				for (register int i = 0; i < arr[arr[aidx].mar].childN; i++) {
+					child[childN++] = arr[arr[aidx].mar].child[i];
+					arr[child[i]].par[sex] = aidx;
+				}
+			}
+			else {
+				child[childN++] = existidx;
+				arr[existidx].par[sex] = aidx;
+			}
+		}
+		else {
+			if (arr[existidx].par[0] != -1) { // 만약 부모가 있다면
+				arr[arr[existidx].par[0]].mar = aidx; // 결혼 시켜주기
+				arr[aidx].mar = arr[existidx].par[0];
+				for (register int i = 0; i < arr[arr[aidx].mar].childN; i++) {
+					child[childN++] = arr[arr[aidx].mar].child[i];
+					arr[child[i]].par[sex] = aidx;
+				}
+			}
+			else {
+				child[childN++] = existidx;
+				arr[existidx].par[sex] = aidx;
+			}
+		}
+	}
+	else if (relation == 2) {
+		par[arr[existidx].sex] = existidx;
+		arr[existidx].child[arr[existidx].childN++] = aidx;
+		if (arr[existidx].mar != -1) {
+			int next = arr[existidx].mar;
+			arr[next].child[arr[next].childN++] = aidx;
+			par[arr[next].sex] = next;
+		}
+	}
+}
+int dist[MAXX][MAXX];
+int dcnt[MAXX][MAXX];
+void init(char initialMemberName[], int initialMemberSex) {
+	for (register int i = 0; i < MAXX; i++) {
+		for (register int j = 0; j < MAXX; j++) {
+			dist[i][j] = 0; // 안 해도 될듯?
+			dcnt[i][j] = 0;
+		}
+	}
+	for (register int i = 0; i < HSIZE; i++) nhash[i].next = 0;
+	aidx = nbfcnt = 0;
+	arr[aidx].init(initialMemberName, initialMemberSex, 0, -1);
+	int key = 0;
+	for (register int i = 0; initialMemberName[i]; i++) key = (key * 32 + (initialMemberName[i] - 'a' + 1)) % HSIZE;
+	nhash[key].next = nbuf[nbfcnt++].alloc(aidx++, nhash[key].next);
+}
+bool exception(int relation, int exidx, int newSex) {
+	if (relation == 0) {
+		if (newSex == arr[exidx].sex) return true;
+		if (arr[exidx].mar != -1) return true;
+	}
+	else if (relation == 1) {
+		if (arr[exidx].par[newSex] != -1) return true;
+	}
+	return false;
+}
+int que[40000], ql, qr, check[MAXX],visit, d[MAXX];
+void bfs(int start) {
+	visit++;
+	ql = qr = d[start] = 0;
+	que[qr++] = start;
+	check[start] = visit;
+	while (ql != qr) {
+		int now = que[ql++];
+		if (arr[now].par[0] != -1 && check[arr[now].par[0]] != visit) {
+			int next = arr[now].par[0];
+			que[qr++] = next;
+			check[next] = visit;
+			dist[start][next] = dist[next][start] = d[next] = d[now] + 1;
+			dcnt[start][d[next]]++;
+			dcnt[next][d[next]]++;
+		}
+		if (arr[now].par[1] != -1 && check[arr[now].par[1]] != visit) {
+			int next = arr[now].par[1];
+			que[qr++] = next;
+			check[next] = visit;
+			dist[start][next] = dist[next][start] = d[next] = d[now] + 1;
+			dcnt[start][d[next]]++;
+			dcnt[next][d[next]]++;
+		}
+		if (arr[now].mar != -1 && check[arr[now].mar] != visit) {
+			int next = arr[now].mar;
+			que[qr++] = next;
+			check[next] = visit;
+			dist[start][next] = dist[next][start] = d[next] = d[now];
+			dcnt[start][d[next]]++;
+			dcnt[next][d[next]]++;
+		}
+		for (int i = 0; i < arr[now].childN; i++) {
+			if (check[arr[now].child[i]] != visit) {
+				int next = arr[now].child[i];
+				check[next] = visit;
+				que[qr++] = next;
+				dist[start][next] = dist[next][start] = d[next] = d[now] + 1;
+				dcnt[start][d[next]]++;
+				dcnt[next][d[next]]++;
+			}
+		}
+	}
+}
+bool addMember(char newMemberName[], int newMemberSex, int relationship, char existingMemberName[]) {
+	int ekey = 0;
+	for (register int i = 0; existingMemberName[i]; i++) ekey = (ekey * 32 + (existingMemberName[i] - 'a' + 1)) % HSIZE;
+	Hash* p = nhash[ekey].next;
+	while (p) {
+		if (mstrcmp(arr[p->aidx].name, existingMemberName)) break;
+		p = p->next;
+	}
+	if (exception(relationship, p->aidx, newMemberSex)) return false;
+	arr[aidx].init(newMemberName, newMemberSex, p->aidx, relationship);
+	int key = 0;
+	for (register int i = 0; newMemberName[i]; i++) key = (key * 32 + (newMemberName[i] - 'a' + 1)) % HSIZE;
+	nhash[key].next = nbuf[nbfcnt++].alloc(aidx, nhash[key].next);
+	bfs(aidx);
+	aidx++;
+	return true;
+}
+int getDistance(char nameA[], char nameB[]) {
+	int akey = 0;
+	for (register int i = 0; nameA[i]; i++) akey = (akey * 32 + (nameA[i] - 'a' + 1)) % HSIZE;
+	int bkey = 0;
+	for (register int i = 0; nameB[i]; i++) bkey = (bkey * 32 + (nameB[i] - 'a' + 1)) % HSIZE;
+	Hash* p = nhash[akey].next, *q = nhash[bkey].next;
+	while (p) {
+		if (mstrcmp(arr[p->aidx].name, nameA)) break;
+		p = p->next;
+	}
+	while (q) {
+		if (mstrcmp(arr[q->aidx].name, nameB)) break;
+		q = q->next;
+	}
+	return dist[p->aidx][q->aidx];
+}
+int countMember(char name[], int dist) {
+	int akey = 0;
+	for (register int i = 0; name[i]; i++) akey = (akey * 32 + (name[i] - 'a' + 1)) % HSIZE;
+	Hash* p = nhash[akey].next;
+	while (p) {
+		if (mstrcmp(arr[p->aidx].name, name)) break;
+		p = p->next;
+	}
+	return dcnt[p->aidx][dist];
+}
