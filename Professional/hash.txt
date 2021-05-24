@@ -4,7 +4,6 @@ const int MOD = 10000;
 const int RLM = 11;
 
 int bCnt, fCnt;
-
 struct Food {
 
 	int fid, rn, price;
