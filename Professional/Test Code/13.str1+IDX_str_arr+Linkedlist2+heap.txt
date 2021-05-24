@@ -1,0 +1,172 @@
+#define MAXM	3
+#define HISZE 100000
+struct Hash {
+    int maidx;
+    Hash* next;
+    Hash* alloc(int _maidx, Hash* _next) {
+        maidx = _maidx;
+        next = _next;
+        return this;
+    }
+}buf[400000];
+int bfcnt, maidx;
+struct User {
+    Hash send, rece;
+}user[1001];
+struct Mst {
+    int sendUid, receUid, mID, timesp;
+    int isRead, del;
+    void init(int _sendUid, int _receUid, int _mID, int _timesp) {
+        sendUid = _sendUid; receUid = _receUid; mID = _mID; timesp = _timesp;
+        isRead = 0;
+        del = 0;
+    }
+}marr[100001];
+bool cmp(int a, int b){
+    if (marr[a].timesp > marr[b].timesp) return true;
+    else return false;
+}
+void swap(int& a, int& b) {
+    int c = a;
+    a = b;
+    b = c;
+}
+struct Heap {
+    int mid[200001], size;
+    void update(int child) {
+        int parent = child / 2;
+        while (child != 1 && cmp(mid[parent], mid[child])) {
+            swap(mid[parent], mid[child]);
+            child = parent;
+            parent /= 2;
+        }
+    }
+    void downdate(int parent) {
+        int child = parent * 2;
+        while (child <= size) {
+            if (child + 1 <= size && cmp(mid[child], mid[child + 1])) child++;
+            if (cmp(mid[child], mid[parent])) break;
+            swap(mid[parent], mid[child]);
+            parent = child;
+            child *= 2;
+        }
+    }
+    void push(int _midx) {
+        mid[++size] = _midx;
+        update(size);
+    }
+    int pop() {
+        if (size == 0) return -1;
+        int res = mid[1];
+        mid[1] = mid[size--];
+        downdate(1);
+        return res;
+    }
+}heap;
+void init(int N) {
+    bfcnt = maidx = heap.size = 0;
+    for (register int i = 0; i < 1001; i++) {
+        user[i].send.next = 0;
+        user[i].rece.next = 0;
+    }
+}
+void receiveMsg(int reMid) {
+    if (marr[reMid].del == 1) return;
+    int receUid = marr[reMid].receUid;
+    user[receUid].rece.next = buf[bfcnt++].alloc(reMid, user[receUid].rece.next);
+}
+void sendMessage(int cTimestamp, int uID1, int uID2, int mID, int scheduleTimestamp) {
+    while (heap.size != 0 && marr[heap.mid[1]].timesp <= cTimestamp) {
+        receiveMsg(heap.pop());
+    }
+    marr[maidx].init(uID1, uID2, mID, scheduleTimestamp);
+    user[uID1].send.next = buf[bfcnt++].alloc(maidx, user[uID1].send.next);
+    heap.push(maidx);
+    maidx++;      
+}
+int retrieveSentbox(int cTimestamp, int uID, int mIDList[MAXM], int uIDList[MAXM], int readList[MAXM]) {
+    while (heap.size != 0 && marr[heap.mid[1]].timesp <= cTimestamp) {
+        receiveMsg(heap.pop());
+    }
+    int cnt = 0;
+    Hash* p = user[uID].send.next;
+    for (cnt = 0; cnt < 3 && p!=0; cnt++) {
+        mIDList[cnt] = marr[p->maidx].mID;
+        uIDList[cnt] = marr[p->maidx].receUid;
+        readList[cnt] = marr[p->maidx].isRead;
+        p = p->next;
+    }
+    return cnt;
+}
+int retrieveInbox(int cTimestamp, int uID, int mIDList[MAXM], int uIDList[MAXM], int readList[MAXM]) {
+    while (heap.size != 0 && marr[heap.mid[1]].timesp <= cTimestamp) {
+        receiveMsg(heap.pop());
+    }
+    int cnt = 0;
+    Hash* p = user[uID].rece.next;
+    for (cnt = 0; cnt < 3 && p != 0; cnt++) {
+        mIDList[cnt] = marr[p->maidx].mID;
+        uIDList[cnt] = marr[p->maidx].sendUid;
+        readList[cnt] = marr[p->maidx].isRead;
+        p = p->next;
+    }
+    return cnt;
+}
+int readMessage(int cTimestamp, int uID, int mID) {
+    while (heap.size != 0 && marr[heap.mid[1]].timesp <= cTimestamp) {
+        receiveMsg(heap.pop());
+    }
+    Hash *p = user[uID].send.next;
+    int flag = 0;
+    while (p) {
+        if (marr[p->maidx].mID == mID) {
+            flag = 1;
+            break;
+        }
+        p = p->next;
+    }
+    p = user[uID].rece.next;
+    while (p) {
+        if (marr[p->maidx].mID == mID) {
+            flag = 1;
+            marr[p->maidx].isRead = 1;
+            break;
+        }
+        p = p->next;
+    }
+    return flag;
+}
+int deleteMessage(int cTimestamp, int uID, int mID) {
+    while (heap.size != 0 && marr[heap.mid[1]].timesp <= cTimestamp) {
+        receiveMsg(heap.pop());
+    }
+    Hash* p = user[uID].send.next;
+    Hash* q = &user[uID].send;
+    if (mID == 1463 || mID == 1229) {
+        int d = 0;
+    }
+    int flag = 0;
+    while (p) {
+        if (marr[p->maidx].mID == mID) {
+            flag = 1;
+            marr[p->maidx].del = 1;
+            q->next = p->next;
+            break;
+        }
+        q = q->next;
+        p = p->next;
+    }
+    p = user[uID].rece.next;
+    q = &user[uID].rece;
+    while (p) {
+        if (marr[p->maidx].mID == mID) {
+            flag = 1;
+            marr[p->maidx].del = 1;
+            q->next = p->next;
+            break;
+        }
+        q = q->next;
+        p = p->next;
+    }
+    return flag;
+}
