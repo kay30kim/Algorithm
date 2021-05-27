@@ -4,143 +4,102 @@
 
 #include <stdio.h>
 
-#define MALE   0
-#define FEMALE 1
+// API Command
+#define CMD_INIT        100
+#define CMD_ADDWORD     200
+#define CMD_REMOVEWORD  300
+#define CMD_SEARCHWORD  400
 
-#define INIT         0
-#define ADDMEMBER    1
-#define GETDISTANCE  2
-#define COUNTMEMBER  3
+// User Implement API
+extern void init(void);
+extern void addWord(char str[]);
+extern int  removeWord(char str[]);
+extern int  searchWord(char str[]);
 
-#define COUPLE  0
-#define PARENT  1
-#define CHILD   2
-
-#define NAME_LEN_MAX 19
-
-extern void init(char initialMemberName[], int initialMemberSex);
-extern bool addMember(char newMemberName[], int newMemberSex, int relationship, char existingMemberName[]);
-extern int  getDistance(char nameA[], char nameB[]);
-extern int  countMember(char name[], int dist);
-
-
-static int score = 0;
-
-static void cmd_init()
-{
-	char initialMemberName[NAME_LEN_MAX + 1];
-	int initialMemberSex;
-
-	scanf("%s %d", initialMemberName, &initialMemberSex);
-
-	init(initialMemberName, initialMemberSex);
+#define STRLEN_MAX 6
+int mastrlen(const char a[]) {
+	int i;
+	for (i = 0; a[i] != '\0'; ++i);
+	return i;
 }
-
-static void cmd_addMember()
+static int run(int score)
 {
-	char newMemberName[NAME_LEN_MAX + 1];
-	int newMemberSex;
-	int relationship;
-	char existingMemberName[NAME_LEN_MAX + 1];
+	int queryCnt;
+	scanf("%d", &queryCnt);
 
-	scanf("%s %d %d %s", newMemberName, &newMemberSex, &relationship, existingMemberName);
-
-	bool userAns = addMember(newMemberName, newMemberSex, relationship, existingMemberName);
-
-	int ans;
-	scanf("%d", &ans);
-	bool ansbool = ans == 1 ? true : false;
-
-	if (ansbool != userAns)
+	for (int q = 0; q < queryCnt; ++q)
 	{
-		printf("틀림\n");
-		score = 0;
+		if (q == 289) {
+			int d = 0;
+		}
+		int cmd;
+		scanf("%d", &cmd);
+
+		if (cmd == CMD_INIT)
+		{
+			init();
+		}
+		else if (cmd == CMD_ADDWORD)
+		{
+			char str[STRLEN_MAX + 1];
+			scanf("%s", str);
+			int len = mastrlen(str);
+			if ((str[len - 1] == 'h') && (str[len - 2] == 'u') && (str[0] == 'c')) {
+				int e = 0;
+			}
+			addWord(str);
+		}
+		else if (cmd == CMD_REMOVEWORD)
+		{
+			char str[STRLEN_MAX + 1];
+			scanf("%s", str);
+
+			int userAns = removeWord(str);
+
+			int ans;
+			scanf("%d", &ans);
+
+			if (userAns != ans)
+			{
+//				printf("틀림 : %d\n", userAns);
+				score = 0;
+			}
+		}
+		else if (cmd == CMD_SEARCHWORD)
+		{
+			char str[STRLEN_MAX + 1];
+			scanf("%s", str);
+
+			int userAns = searchWord(str);
+
+			int ans;
+			scanf("%d", &ans);
+
+			if (userAns != ans)
+			{
+				printf("틀림 : %d\n", userAns);
+				score = 0;
+			}
+		}
 	}
+	return score;
 }
 
-static void cmd_getDistance()
-{
-	char nameA[NAME_LEN_MAX + 1];
-	char nameB[NAME_LEN_MAX + 1];
-
-	scanf("%s %s", nameA, nameB);
-
-	int userAns = getDistance(nameA, nameB);
-
-	int ans;
-	scanf("%d", &ans);
-
-	if (ans != userAns)
-	{
-		printf("틀림 %d\n", userAns);
-		score = 0;
-	}
-}
-
-static void cmd_countMember()
-{
-	char name[NAME_LEN_MAX + 1];
-	int dist;
-
-	scanf("%s %d", name, &dist);
-
-	int userAns = countMember(name, dist);
-
-	int ans;
-	scanf("%d", &ans);
-
-	if (ans != userAns)
-	{
-		printf("틀림 %d\n", userAns);
-		score = 0;
-	}
-}
-
-int main()
+int main(void)
 {
 	setbuf(stdout, NULL);
 
-	//freopen("sample_input.txt", "r", stdin);
+	freopen("sample_input.txt", "r", stdin);
 
-	int T, scoreIdx;
-	scanf("%d %d", &T, &scoreIdx);
+	int TC;
+	int targetScore;
+	scanf("%d %d", &TC, &targetScore);
 
-	for (int TC = 1; TC <= T; TC++)
+	for (int testcase = 1; testcase <= TC; ++testcase)
 	{
-		score = scoreIdx;
-
-		int cmdL;
-		scanf("%d", &cmdL);
-
-		for (int cmdIdx = 0; cmdIdx < cmdL; ++cmdIdx)
-		{
-			int c_num;
-			scanf("%d", &c_num);
-
-			switch (c_num)
-			{
-			case INIT:
-				cmd_init();
-				break;
-
-			case ADDMEMBER:
-				cmd_addMember();
-				break;
-
-			case GETDISTANCE:
-				cmd_getDistance();
-				break;
-
-			case COUNTMEMBER:
-				cmd_countMember();
-				break;
-
-			default:
-				break;
-			}
-		}
-
-		printf("#%d %d\n", TC, score == scoreIdx ? scoreIdx : 0);
+		int score = run(targetScore);
+		printf("#%d %d\n", testcase, score);
 	}
+
 	return 0;
 }

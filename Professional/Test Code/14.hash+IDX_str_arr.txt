@@ -1,0 +1,148 @@
+#define HSIZE 900001 // 30000만 있어도 될거같기도 함
+#define ADDMAX 50001
+int mstrcmp(const char a[], const char b[]) {
+	int i;
+	for (i = 0; a[i] != '\0'; ++i) if (a[i] != b[i]) return a[i] - b[i];
+	return a[i] - b[i];
+}
+void mstrcpy(char dest[], const char src[]) {
+	int i = 0;
+	while (src[i] != '\0') { dest[i] = src[i]; i++; }
+	dest[i] = src[i];
+}
+int mstrlen(const char a[]) {
+	int i;
+	for (i = 0; a[i] != '\0'; ++i);
+	return i;
+}
+struct Hash {
+	int aidx, cidx, cnt;
+	Hash* next, * prev;
+	void alloc(int _aidx, Hash* _next, Hash* _prev) {
+		aidx = _aidx; next = _next, prev = _prev;
+		if (next) next->prev = this;
+		if (prev) prev->next = this;
+	}
+	void pop() {
+		if (next) next->prev = prev;
+		if (prev) prev->next = this;
+	}
+}hash[HSIZE],buf[ADDMAX*10];
+struct Arr {
+	char name[7];
+	int del;
+}arr[ADDMAX];
+char wname[ADDMAX * 10][8];
+int bfcnt, aidx, cidx;
+int getkey(char str[]) {
+	int key = 0;
+	for (register int i = 0; str[i]; i++) key = (key * 32 + str[i])%HSIZE;
+	while (hash[key].next != 0 && mstrcmp(wname[hash[key].cidx],str)!=0) {
+		key++;
+		key %= HSIZE;
+	}
+	if (key == 111459) {
+		int d = 0;
+	}
+	return key;
+}
+void init(void) {
+	for (register int i = 0; i < HSIZE; i++) {
+		hash[i].next = 0;
+		hash[i].cnt = 0;
+	}
+	aidx = cidx = bfcnt = 1;
+}
+void add(char wnameTmp[], int nowaidx) {
+	int key = getkey(wnameTmp);
+	if (hash[key].next == 0) {
+		hash[key].cnt = 1;
+		int nowcidx = cidx++;
+		hash[key].cidx = nowcidx;
+		mstrcpy(wname[nowcidx], wnameTmp);
+		buf[bfcnt++].alloc(nowaidx, hash[key].next, &hash[key]);
+	}
+	else {
+		hash[key].cnt++;
+		buf[bfcnt++].alloc(nowaidx, hash[key].next, &hash[key]);
+	}
+}
+void addWord(char str[]) {
+	// 기존 name hash 설정
+	int key = getkey(str);
+	int nowaidx, nowcidx;
+	nowaidx = aidx++;
+	if (hash[key].next == 0) {
+		hash[key].cnt = 1;
+		nowcidx = cidx++;
+		
+		hash[key].cidx = nowcidx;
+		mstrcpy(wname[nowcidx], str);
+		buf[bfcnt++].alloc(nowaidx, hash[key].next, &hash[key]);
+	}
+	else {
+		hash[key].cnt++;
+		buf[bfcnt++].alloc(nowaidx, hash[key].next, &hash[key]);
+	}
+
+	// wildcard name hash 설정
+	int len = mstrlen(str);
+	register int k = 0, cnt;
+	char wnameTmp[8];
+	for (register int i = 0; i < len; i++) {
+		for (register int j = 0; j < len && (j+i)<=len; j++) {
+			cnt = 0;
+			int flag = 1;
+			for (k = 0; k < len; k++) {
+				if (i == k && flag) {
+					flag = 0;
+					k += j;
+					k -= 1;
+					wnameTmp[cnt++] = '*';
+				}
+				else {
+					wnameTmp[cnt++] = str[k];
+				}
+			}
+			wnameTmp[cnt] = '\0';
+			add(wnameTmp, nowaidx);
+		}
+	}
+
+	// arr설정
+	mstrcpy(arr[nowaidx].name, str);
+	arr[nowaidx].del = 0;
+
+	// 추가 저장
+	wnameTmp[0] = '*';
+	wnameTmp[1] = '\0';
+	add(wnameTmp, nowaidx);
+	mstrcpy(wnameTmp, str);
+	wnameTmp[len++] = '*';
+	wnameTmp[len++] = '\0';
+	add(wnameTmp, nowaidx);
+	
+}
+int removeWord(char str[]) {
+	int key = getkey(str), cnt =0;
+	Hash* p = hash[key].next;
+	while (p) {
+		if (arr[p->aidx].del == 0) {
+			arr[p->aidx].del = 1;
+			cnt++;
+		}
+		p = p->next;
+	}
+	return cnt;
+}
+int searchWord(char str[]) {
+	int key = getkey(str), cnt = 0;
+	Hash* p = hash[key].next;
+	while (p) {
+		if (arr[p->aidx].del == 0) {
+			cnt++;
+		}
+		p = p->next;
+	}
+	return cnt;
+}
