@@ -15,6 +15,7 @@ int mstrlen(const char a[]) {
 	for (i = 0; a[i] != '\0'; ++i);
 	return i;
 }
+
 struct Hash {
 	int aidx, cidx, cnt;
 	Hash* next, * prev;
