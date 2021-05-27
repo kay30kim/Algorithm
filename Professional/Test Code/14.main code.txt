@@ -18,7 +18,6 @@
 
 #define NAME_LEN_MAX 19
 
-
 extern void init(char initialMemberName[], int initialMemberSex);
 extern bool addMember(char newMemberName[], int newMemberSex, int relationship, char existingMemberName[]);
 extern int  getDistance(char nameA[], char nameB[]);
