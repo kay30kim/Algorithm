@@ -1,0 +1,33 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+class Solution {
+public:
+    bool validMountainArray(vector<int>& arr) {
+        bool flag = true;
+        int num = arr[0];
+        if (arr.size() < 3) return false;
+        if (arr[0] > arr[1]) return false;
+        for (int i = 1; i < arr.size(); i++) {
+            if (num < arr[i]) {
+                if (!flag) return false;
+                num = arr[i];
+            }
+            else if (num == arr[i]) {
+                return false;
+            }
+            else {
+                flag = false;
+                num = arr[i];
+            }
+        }
+        return true;
+    }
+};
+int main() {
+    vector<int> v = { 4,5,5 };
+    Solution a;
+    if (a.validMountainArray(v)) cout << "참" << endl;
+    else cout << "거짓" << endl;
+    return 0;
+}
