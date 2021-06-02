@@ -1,0 +1,42 @@
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+using namespace std;
+class Solution {
+public:
+    vector<vector<int>> generate(int numRows) {
+        vector<vector<int>> map(numRows);
+        for (int i = 0; i < numRows; i++) {
+            map[i].resize(i + 1);
+            map[i][0] = 1, map[i][i] = 1;
+            for (int j = 1; j < i; j++) {
+                map[i][j] = map[i - 1][j - 1] + map[i - 1][j];
+            }
+        }
+        return map;
+    }
+};
+class Solution {
+public:
+    vector<vector<int>> generate(int numRows) {
+        vector<vector<int>>nums;
+        for (int i = 1; i <= numRows; i++)
+        {
+            vector<int>num;
+            int c = 1; // First element of every line would be 1;
+            for (int j = 1; j <= i; j++)
+            {
+                num.push_back(c);
+                c = c * (i - j) / j;
+            }
+            nums.push_back(num);
+        }
+        return nums;
+    }
+};
+int main() {
+    vector<int> v = { 4,5,5 };
+    Solution a;
+    a.generate(5);
+	return 0;
+}
