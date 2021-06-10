@@ -1,0 +1,21 @@
+class MyCalendar {
+public:
+    MyCalendar() {
+        cnt=0;
+    }
+    struct List{
+        int s,e;
+    }list[1001];
+    int cnt;
+    bool book(int start, int end) {
+        for(int i=0; i<cnt;i++){
+            if(list[i].s <= start && start <=list[i].e) return false;
+            if(list[i].s <= (end-1) && (end-1) <=list[i].e) return false;
+            if(start<=list[i].s && list[i].s <= (end-1)) return false;
+            if(start<=list[i].e && list[i].e <= (end-1)) return false;
+        }
+        list[cnt].s = start;
+        list[cnt++].e = end-1;
+        return true;
+    }
+};

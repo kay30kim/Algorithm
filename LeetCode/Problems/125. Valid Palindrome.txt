@@ -1,0 +1,31 @@
+class Solution {
+public:
+    char str[200001];
+    bool isPalindrome(string s) {        
+        int len = s.length(), cnt = 0;;
+        for (int i = 0; i < len; i++) {
+            if (s[i] >= 'A' && s[i] <= 'Z') {
+                str[cnt++] = s[i] - 'A' + 'a';
+            }
+            else if (s[i] >= '0' && s[i] <= '9') {
+                str[cnt++] = s[i];
+            }
+            else if(s[i]>='a' && s[i]<='z' && s[i] != '@') {
+                str[cnt++] = s[i];
+            }
+        }
+        len = cnt;
+        if (len < 2) return true;        
+        for (int i = 0; i < len / 2; i++) {
+            if (str[i] != str[len - i - 1]) return false;
+        }
+      
+        return true;
+    }
+};
+int main() {
+    Solution a;
+    if (a.isPalindrome("0P")) printf("true\n");
+    else printf("false\n");
+    return 0;
+}
