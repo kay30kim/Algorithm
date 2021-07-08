@@ -1,0 +1,14 @@
+class Solution(object):
+    def findNumbers(self, nums):
+        ans = 0
+        for x in nums:
+            num = 0
+            while True:
+                if x == 0 :
+                    break
+                num = num + 1
+                x = x/10
+            if num%2==0:
+               ans = ans+1
+        return ans
+        
