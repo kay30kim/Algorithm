@@ -1,0 +1,10 @@
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        pre = -101
+        k = 0
+        for x in nums:
+            if pre != x:
+                nums[k] = x
+                k += 1
+                pre = x
+        return k
