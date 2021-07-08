@@ -1,0 +1,7 @@
+class Solution:
+    def thirdMax(self, nums: List[int]) -> int:
+        sorted_set = sorted({n for n in nums})
+        if len(sorted_set) >= 3:
+            return sorted_set[-3]
+        else:
+            return sorted_set[-1]

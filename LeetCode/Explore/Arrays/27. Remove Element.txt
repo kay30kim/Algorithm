@@ -1,0 +1,14 @@
+class Solution(object):
+    def removeElement(self, nums, val):
+        idx=0
+        lena = len(nums)
+        if lena == 0:
+            return 0
+        for i in range(0, len(nums)):
+            if nums[i]!=val:
+                nums[idx] = nums[i]
+                idx +=1
+        for i in range(lena-1, idx, -1):
+            nums[i] = '0' 
+        return idx
+        
