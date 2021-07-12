@@ -1,0 +1,9 @@
+str = list(input())
+sum = ''
+for i, x in enumerate(str):
+    sum += x
+    if i%10 ==9:
+        print(sum)
+        sum=''
+if sum !='':
+    print(sum)
