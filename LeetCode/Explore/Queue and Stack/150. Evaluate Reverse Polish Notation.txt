@@ -1,0 +1,25 @@
+class Solution:
+    def evalRPN(self, tokens: List[str]) -> int:
+        s= []
+        sum0 = int(tokens[0])
+        for x in tokens:
+            if x == '*' :
+                sum0 = s.pop()*s.pop() 
+                s.append(sum0)
+            elif x=='+':
+                sum0 = s.pop()+s.pop()
+                s.append(sum0)
+            elif x=='-':
+                num1 = s.pop()
+                num2 = s.pop()
+                sum0 = num2- num1
+                s.append(sum0)
+            elif x=='/':
+                num1 = s.pop()
+                num2 = s.pop()
+                sum0 = num2/num1
+                sum0 = trunc(sum0)
+                s.append(sum0)
+            else:
+                s.append(int(x))
+        return s[-1]

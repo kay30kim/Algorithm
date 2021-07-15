@@ -1,0 +1,60 @@
+class MyCircularQueue:
+    li=[]
+    f= r=kk=0
+    def __init__(self, k: int):
+        global li, f, r, kk
+        li = [0]*k
+        f = r = kk = k
+
+    def enQueue(self, value: int) -> bool:
+        global li, f, r, kk
+        if r-f < kk:            
+            li[r%kk] = value
+            r +=1
+            return True
+        else :
+            return False
+
+    def deQueue(self) -> bool:
+        global li, f, r, kk
+        if r!=f:
+            f +=1
+            return True
+        else :
+            return False
+
+    def Front(self) -> int:
+        global li, f, r, kk
+        if r==f:
+            return -1
+        return li[f%kk]
+
+    def Rear(self) -> int:
+        global li, f, r, kk
+        if r==f:
+            return -1
+        return li[(r-1)%kk]
+
+    def isEmpty(self) -> bool:
+        global li, f, r, kk
+        if r==f:
+            return True
+        else:
+            return False
+
+    def isFull(self) -> bool:
+        global li, f, r, kk
+        if r-f == kk:
+            return True
+        else:
+            return False
+
+
+# Your MyCircularQueue object will be instantiated and called as such:
+# obj = MyCircularQueue(k)
+# param_1 = obj.enQueue(value)
+# param_2 = obj.deQueue()
+# param_3 = obj.Front()
+# param_4 = obj.Rear()
+# param_5 = obj.isEmpty()
+# param_6 = obj.isFull()
