@@ -1,0 +1,18 @@
+import sys
+n = int(sys.stdin.readline())
+li = list(map(int,sys.stdin.readline().split()))
+#soSu = [1 for i in range(1001)]
+ans = 0
+for x in li:
+	if x==1 :
+		continue
+	flag = 1
+	for i in range(2,x):
+		if i*i>x:
+			break
+		if x%i==0:
+			flag = 0
+			break
+	if flag :
+		ans +=1
+print(ans)

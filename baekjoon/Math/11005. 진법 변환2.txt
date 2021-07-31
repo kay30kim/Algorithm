@@ -1,0 +1,12 @@
+import sys
+n, b = map(int, sys.stdin.readline().split())
+#print(n,b)
+ans = ''
+while n!=0:
+	#print(n%b)
+	if n%b <10:
+		ans = str(n%b) + ans
+	else:
+		ans = str(chr(n%b+55)) + ans
+	n = n//b
+print(ans)

@@ -1,0 +1,10 @@
+import sys
+a, b = map(int, sys.stdin.readline().split())
+numa = max(a,b)
+numb = min(a,b)
+while numb != 0:
+	tmp = numb
+	numb = numa%numb
+	numa = tmp
+for i in range(numa):
+	print('1',end='')

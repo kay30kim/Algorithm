@@ -1,0 +1,12 @@
+import sys
+N = int(sys.stdin.readline())
+n = N
+cnt = 2
+while True:
+	if cnt>n:
+		break
+	if n%cnt==0:
+		n = n//cnt
+		print(cnt)
+	else :
+		cnt +=1
