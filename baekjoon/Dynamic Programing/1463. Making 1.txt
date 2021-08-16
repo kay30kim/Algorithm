@@ -1,0 +1,19 @@
+import sys
+
+n = int(sys.stdin.readline())
+memo = [0 for i in range(n+1)]
+if n >= 2:
+	memo[2] = 1
+if n >=3 :
+	memo[3] = 1
+for i in range(4,n+1):
+	if i%2==0 and i%3==0:
+		memo[i] = min(memo[i-1],memo[i//2],memo[i//3])+1
+	elif i%2==0:
+		memo[i] = min(memo[i-1],memo[i//2])+1
+	elif i%3==0:
+		memo[i] = min(memo[i-1],memo[i//3])+1
+	else:
+		memo[i] = memo[i-1]+1
+	#print(i,memo[i])
+print(memo[n])
