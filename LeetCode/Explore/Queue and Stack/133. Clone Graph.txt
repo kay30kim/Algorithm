@@ -1,0 +1,63 @@
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    vector<Node*> neighbors;
+    Node() {
+        val = 0;
+        neighbors = vector<Node*>();
+    }
+    Node(int _val) {
+        val = _val;
+        neighbors = vector<Node*>();
+    }
+    Node(int _val, vector<Node*> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+};
+*/
+#include <queue>
+using namespace std;
+bool visited[101][10000];
+int tc;
+class Solution {    
+public:
+    Node* cloneGraph(Node* node) {
+        if (node == NULL)
+            return NULL;
+        Node* root = new Node(node->val);
+        BFS(root, node);
+        return root;
+    }
+    
+    void BFS(Node* root, Node* input){
+        Node* nodes[101], cur_node;
+        
+        queue<Node*> q;
+        q.push(input);
+        
+        visited[input->val][tc] = true;        
+        nodes[input->val] = root;
+        
+        while(!q.empty()){
+            Node *now = q.front();
+            int now_val = now->val;
+            q.pop();
+            
+            for(int i=0; i < now->neighbors.size(); i++){
+                Node *next = now->neighbors[i];
+                if(!visited[next->val][tc]){
+                    Node *node = new Node(next->val);
+                    nodes[next->val] = node;
+                    
+                    visited[next->val][tc] = true;
+                    q.push(next);
+                }
+                nodes[now_val]->neighbors.push_back(nodes[next->val]);
+            }
+        }
+        tc++;
+    }
+};
