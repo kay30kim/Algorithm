@@ -1,0 +1,31 @@
+int roomQueue[1000];
+int f,r;
+int tc;
+int uniqueRoom[1000];
+bool canVisitAllRooms(int** rooms, int roomsSize, int* roomsColSize){
+    tc++;
+    f=0;
+    r=0;
+    //const int numm = roomsSize;
+    
+    uniqueRoom[0] = tc;
+    roomQueue[r++] = 0;
+    int roomIdx = 0;
+    int numVisitedRooms = 1;
+    
+    while (f!=r) { // if queue is not empty gogogogo
+        int now = roomQueue[f++];
+        for (int keyIdx = 0; keyIdx < roomsColSize[now]; keyIdx++){
+            if (uniqueRoom[rooms[now][keyIdx]] != tc){
+                numVisitedRooms++;
+                uniqueRoom[rooms[now][keyIdx]] = tc;
+                roomQueue[r++] = rooms[now][keyIdx];
+                if (numVisitedRooms == roomsSize)
+                {
+                    return true;
+                }
+            }       
+        }
+    }
+    return false;
+}

@@ -1,0 +1,26 @@
+class Solution:
+    memo = [[-1 for i in range(2001)] for j in range(21)]
+    def DFS(self, nums:List[int], target:int, sum:int, idx:int) -> int:
+        if idx == len(nums):
+            print('sum = %d  %d'%(sum,target==sum))
+            return sum == target
+        
+        if self.memo[idx][sum+1000]!= -1:
+            return self.memo[idx][sum+1000]
+        
+        num1=0
+        num2=0
+        for j in range(2):
+            if j==0:
+                x = 1 * nums[idx]
+                num1 = self.DFS(nums,target,sum+x,idx+1)
+            else:
+                x = -1 * nums[idx]
+                num2 = self.DFS(nums,target,sum+x,idx+1)
+        self.memo[idx][sum+1000] = num1+num2
+        return self.memo[idx][sum+1000]
+            
+            
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:      
+        self.memo = [[-1 for i in range(2001)] for j in range(21)]
+        return self.DFS(nums,target,0,0)
