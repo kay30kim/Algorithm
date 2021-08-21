@@ -1,0 +1,54 @@
+from collections import deque
+import sys
+sys.setrecursionlimit(1000000)
+M, N = map(int, sys.stdin.readline().split())
+dr = [-1,0,1,0]
+dc = [0,-1,0,1]
+graph = [list(map(int,sys.stdin.readline().split())) for _ in range(N)]
+q = deque()
+ans = 0
+
+def BFS():
+	while q :
+		global num2
+		global ans
+		r, c = q.popleft()
+		for k in range(4):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0 <= nr < N and 0<= nc < M:
+				if graph[nr][nc] == 0:
+					graph[nr][nc] = graph[r][c] + 1
+					q.append([nr,nc])
+					num2+=1
+					if ans < graph[nr][nc] :
+						ans = graph[r][c]
+def DFS(r,c):
+	for k in range(4):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0 <= nr < N and 0<= nc < M:
+				if graph[nr][nc] == 0 or graph[nr][nc] > graph[r][c] + 1:
+					graph[nr][nc] = graph[r][c] + 1
+					DFS(nr,nc)
+
+for i in range(N):
+	for j in range(M):
+		if graph[i][j] == 1:
+			q.append([i,j])
+#BFS()
+while q:
+	r,c = q.popleft()
+	DFS(r,c)
+def getAns():
+	ans = 0
+	for i in range(N):
+		for j in range(M):
+			if graph[i][j] == 0 :
+				return -1
+			elif graph[i][j] !=-1:
+				if ans < graph[i][j]:
+					ans = graph[i][j]
+	return ans -1
+
+print(getAns())

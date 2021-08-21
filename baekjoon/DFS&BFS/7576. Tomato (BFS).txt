@@ -1,0 +1,45 @@
+from collections import deque
+import sys
+M, N = map(int, sys.stdin.readline().split())
+dr = [-1,0,1,0]
+dc = [0,-1,0,1]
+graph = [list(map(int,sys.stdin.readline().split())) for _ in range(N)]
+q = deque()
+ans = 0
+num1 = 0
+num2 = 0
+
+def BFS():
+	while q :
+		global num2
+		global ans
+		r, c = q.popleft()
+		for k in range(4):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0 <= nr < N and 0<= nc < M:
+				if graph[nr][nc] == 0:
+					graph[nr][nc] = graph[r][c] + 1
+					q.append([nr,nc])
+					num2+=1
+					if ans < graph[nr][nc] :
+						ans = graph[r][c]
+
+for i in range(N):
+	for j in range(M):
+		if graph[i][j] == 1:
+			q.append([i,j])
+			num2 += 1
+		elif graph[i][j] == -1:
+			num1 += 1
+BFS()
+'''
+while q:
+	r,c = q.popleft()
+	DFS(r,c)
+'''
+
+if N*M == num1 + num2:
+	print(ans)
+else:
+	print('-1')
