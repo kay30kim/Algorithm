@@ -1,0 +1,56 @@
+from collections import deque
+import sys	
+
+def BFS2():
+	d = [[0 for _ in range(N)] for _ in range(N)]
+	global ans
+	while q2:
+		r,c = q2.popleft()
+		for k in range(4):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0<=nr<N and 0<=nc<N:
+				if graph[nr][nc] == 0 and d[nr][nc] == 0:
+					d[nr][nc] = d[r][c]+1
+					q2.append([nr,nc])
+				if graph[nr][nc] == 1 and visited[nr][nc] !=cnt:
+					if ans > d[r][c]:
+						ans = d[r][c]
+					return
+
+def BFS1(r,c):
+	global q2
+	global cnt
+	q = deque()
+	q.append([r,c])
+	while q :
+		r,c = q.popleft()
+		for k in range(4):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0<=nr<N and 0<=nc<N:
+				if graph[nr][nc] == 1 and visited[nr][nc] == 0 :
+					visited[nr][nc] = cnt
+					q.append([nr,nc])
+				if graph[nr][nc] == 0:
+					q2.append([r,c])	
+					
+sys.setrecursionlimit(10000)
+N = int(sys.stdin.readline())
+dr = [-1, 0, 1, 0]
+dc = [0, -1, 0, 1]
+graph = [list(map(int,sys.stdin.readline().split())) for _ in range(N)]
+visited = [[0 for _ in range(N)] for _ in range(N)]
+q2 = deque()
+ans = 987654321
+cnt = 1
+for i in range(N):
+	for j in range(N):
+		if graph[i][j] == 1 and visited[i][j] == 0:
+			visited[i][j] = cnt
+			BFS1(i,j)
+			BFS2()
+			cnt += 1
+			while q2:
+				q2.popleft()
+print(ans)
