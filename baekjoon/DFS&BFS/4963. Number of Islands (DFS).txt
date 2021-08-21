@@ -1,0 +1,45 @@
+from collections import deque
+import sys
+input = sys.stdin.readline
+sys.setrecursionlimit(2500)
+
+def DFS(r:int, c:int, depth):
+	for k in range(8):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0 <= nr and nr < h and 0 <= nc and nc < w :
+				if graph[nr][nc] == 1 and visited[nr][nc] == 0 :
+					visited[nr][nc] = 1
+					DFS(nr,nc, depth+1)
+
+def BFS(i:int, j:int):
+	q = deque()
+	q.append([i,j])
+	while q :
+		r,c = q.popleft()
+		for k in range(8):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0 <= nr and nr < h and 0 <= nc and nc < w :
+				if graph[nr][nc] == 1 and visited[nr][nc] == 0 :
+					visited[nr][nc] = 1
+					q.append([nr,nc])
+				
+
+dr = [0,0,1,-1,-1,-1,1,1]
+dc = [1,-1,0,0,-1,1,-1,1]
+		
+while True:
+	w,h = map(int, input().split())
+	if w == 0 and h == 0:
+		break
+	graph =[list(map(int,input().split())) for _ in range(h)]
+	visited = [[0 for _ in range(w)] for _ in range(h)]
+	ans = 0
+	for i in range(h):
+		for j in range(w):
+			if graph[i][j] == 1 and visited[i][j] == 0 :
+				visited[i][j] = 1
+				DFS(i,j,0)
+				ans += 1
+	print(ans)
