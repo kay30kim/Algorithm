@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <queue>
+#include <cstring>
+using namespace std;
+int map[51][51];
+bool visited[51][51];
+int dr[] = { -1,0,1,0,-1,-1,1,1 };
+int dc[] = { 0,1,0,-1,-1,1,-1,1 };
+int w, h;
+void bfs(int i, int j) {
+	queue<pair<int, int>> q;
+	q.push({ i,j });
+	while (!q.empty()) {
+		int r = q.front().first;
+		int c = q.front().second;
+		q.pop();
+		for (int k = 0; k < 8; k++) {
+			int nr = r + dr[k];
+			int nc = c + dc[k];
+			if (0 <= nr && nr < h && 0 <= nc && nc < w) {
+				if (map[nr][nc] == 1 && visited[nr][nc] == 0) {
+					visited[nr][nc] = 1;
+					q.push({ nr,nc });
+				}
+			}
+		}
+	}
+}
+int main() {
+	scanf("%d %d", &w, &h);
+	while (w != 0 && h != 0) {
+		memset(visited, 0, sizeof(visited));
+		int ans = 0;
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				scanf("%d", &map[i][j]);
+			}
+		}
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (map[i][j] == 1 && visited[i][j] == 0) {
+					visited[i][j] = 1;
+					bfs(i, j);
+					ans++;
+				}
+			}
+		}		
+		printf("%d\n", ans);
+		scanf("%d %d", &w, &h);
+	}
+	return 0;
+}
