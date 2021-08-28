@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <queue>
+#include <cstring>
+#include <vector>
+using namespace std;
+int dr[] = { -1,0,1,0 };
+int dc[] = { 0,-1,0,1 };
+int N, M, K;
+void bfs(int i, int j, vector<vector<int>>& map) {
+	queue<pair<unsigned int,unsigned int>> q;
+	q.push({ i,j });
+	while (!q.empty()) {
+		unsigned int r = q.front().first;
+		unsigned int c = q.front().second;
+		q.pop();
+		for (int k = 0; k < 4; k++) {
+			unsigned int nr = r + dr[k];
+			unsigned int nc = c + dc[k];
+			if (nr >= N || nc >= M) continue;
+			if (map[nr][nc] == 1) {
+				map[nr][nc] = 2;
+				q.push({ nr,nc });
+			}
+		}
+	}
+}
+int main() {
+	int t;
+	scanf("%d", &t);
+	while (t--) {
+		int ans = 0;
+		scanf("%d %d %d", &M, &N, &K);
+		vector<vector<int>> map(N,vector<int>(M,0));
+		int a, b;
+		for (int i = 0; i < K; i++) {
+			scanf("%d %d", &b, &a);
+			map[a][b] = 1;
+		}
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (map[i][j] == 1) {
+					bfs(i, j, map);
+					ans++;
+				}
+			}
+		}
+		printf("%d\n", ans);
+	}
+	return 0;
+}

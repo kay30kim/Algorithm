@@ -1,0 +1,33 @@
+import sys
+from collections import deque
+TC = int(sys.stdin.readline())
+dr = [-1,0,1,0]
+dc = [0,-1,0,1]
+def bfs(i,j):
+	q = deque()
+	q.append([i,j])
+	while len(q)!=0:
+		r,c = q.popleft()
+		for k in range(4):
+			nr = r + dr[k]
+			nc = c + dc[k]
+			if 0<=nr<N and 0<=nc<M:
+				if mapp[nr][nc] == 1:
+					mapp[nr][nc]=2
+					q.append([nr,nc])
+while(TC):
+	TC-=1
+	ans = 0
+	M, N, K = map(int, sys.stdin.readline().split())
+	mapp = [[0 for _ in range(M)] for _ in range(N)]
+	for _ in range(K):
+		b,a = map(int, sys.stdin.readline().split())
+		mapp[a][b] = 1
+	for i in range(N):
+		for j in range(M):
+			if mapp[i][j]==1:
+				mapp[i][j]=2
+				ans +=1
+				bfs(i,j)
+	print(ans)
+		
