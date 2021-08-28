@@ -1,0 +1,81 @@
+#include <stdlib.h>
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+#define checkMap(r,c)  r<N && c<M
+#define QueueSize 100000
+struct Queue{
+    unsigned int r,c, dis;
+}q[QueueSize];
+int front,rear, N,M, now;
+int dr[] = {-1,0,1,0};
+int dc[] = {0,-1,0,1};
+int bfs(int** visited, int** mat, int** returnMap){
+    while(front!=rear){
+        unsigned int r = q[front].r;
+        unsigned int c = q[front].c;
+        unsigned int dis = q[front++].dis;
+        front %= QueueSize;
+        for(int k=0; k<4;k++){
+            unsigned int nr = r + dr[k];
+            unsigned int nc = c + dc[k];
+            if (checkMap(nr,nc)){
+                if(visited[nr][nc]==now) continue;
+                if(mat[nr][nc]==1){
+                    visited[nr][nc] = now;
+                    
+                    q[rear].r = nr;
+                    q[rear].c = nc;
+                    q[rear++].dis = dis+1;
+                    rear %= QueueSize;
+                    returnMap[nr][nc] = dis+1;
+                }
+            }
+        }
+    }
+    return -1;
+}
+int** updateMatrix(int** mat, const int matSize, const int* matColSize, int* returnSize, int** returnColumnSizes){
+    front=rear=0;
+    N = matSize;
+    M = *matColSize;
+    const int a = matSize;
+    const int b = *matColSize;
+    int **returnMap = malloc(sizeof(int*)*matSize);
+    int **visited = malloc(sizeof(int*)*matSize);
+    
+    *returnSize = matSize;
+    *returnColumnSizes = calloc(matSize,sizeof(int));
+    
+    for(int i=0; i<matSize;i++){
+        visited[i] = calloc(matColSize[i],sizeof(int));
+        returnMap[i] = calloc(matColSize[i],sizeof(int));        
+        (*returnColumnSizes)[i] = matColSize[i];
+    }
+    now++;
+    for(int i=0; i<matSize; i++){        
+        for(int j=0; j<matColSize[i];j++){
+            if(mat[i][j]==0){     
+                for(int k=0; k<4; k++){
+                    unsigned int nr = i+dr[k];
+                    unsigned int nc = j+dc[k];
+                    if(checkMap(nr,nc)){
+                        if(mat[nr][nc]==1 && visited[nr][nc]!=now){
+                            visited[nr][nc] = now;
+                            q[rear].r = nr;
+                            q[rear].c = nc;
+                            q[rear++].dis = 1;
+                            rear %= QueueSize;
+                            returnMap[nr][nc] = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    bfs(visited,mat,returnMap);
+    return returnMap;
+}
