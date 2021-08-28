@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <vector>
+#include <queue>
+using namespace std;
+int M, N, H;
+typedef struct {
+	unsigned int r, c, h;
+}point;
+queue<point> q;
+int dr[] = { -1,1,0,0,0,0 };
+int dc[] = { 0,0,-1,1,0,0 };
+int dh[] = { 0,0,0,0,-1,1 };
+void bfs(vector<vector<vector<int>>> &map) {
+	while (!q.empty()) {
+		unsigned int r = q.front().r;
+		unsigned int c = q.front().c;
+		unsigned int h = q.front().h;
+		q.pop();
+		for (int k = 0; k < 6; k++) {
+			unsigned int nr = r + dr[k];
+			unsigned int nc = c + dc[k];
+			unsigned int nh = h + dh[k];
+			if (nr >= N || nc >= M || nh >= H) continue;
+			if (map[nr][nc][nh] == 0) {
+				map[nr][nc][nh] = map[r][c][h] + 1;
+				q.push({ nr,nc,nh });
+			}
+		}
+	}
+}
+int main() {
+	scanf("%d %d %d", &M, &N, &H);
+	vector<vector<vector<int>>> map(N, vector<vector<int>>(M, vector<int>(H, 0)));
+	// vector<vector<int>> map(N, vector<int>(M, 0));
+	for (int h = 0; h < H; h++) {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				scanf("%d", &map[i][j][h]);
+			}
+		}
+	}
+	for (unsigned int h = 0; h < H; h++) {
+		for (unsigned int i = 0; i < N; i++) {
+			for (unsigned int j = 0; j < M; j++) {
+				if (map[i][j][h] == 1) {
+					q.push({ i,j,h });
+				}
+			}
+		}
+	}
+	bfs(map);
+	int maxx = 0;
+	for (int h = 0; h < H; h++) {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (map[i][j][h] == 0) {
+					printf("-1\n");
+					return 0;
+				}
+				else if (maxx < map[i][j][h]) {
+					maxx = map[i][j][h];
+				}
+			}
+		}
+	}
+	printf("%d\n", maxx-1);
+	return 0;
+}
