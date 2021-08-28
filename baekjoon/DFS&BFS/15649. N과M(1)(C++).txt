@@ -1,0 +1,33 @@
+#include <stdio.h>
+int visited[9], N, M;
+int ans[9];
+void print() {
+	printf("->\n");
+	for (int i = 1; i <= N; i++) {
+		printf("%d ", visited[i]);
+	}
+	printf("\n\n");
+}
+void dfs(int depth) {
+	if (depth == M) {
+		for (int i = 0; i < M; i++) {
+			printf("%d ", ans[i]);	
+		}
+		printf("\n");
+		return;
+	}
+	for (int i = 1; i <= N; i++) {
+		if (visited[i] == 0) {
+			visited[i] = 1;
+			ans[depth] = i;
+			dfs(depth + 1);
+			visited[i] = 0;
+		}
+	}
+
+}
+int main() {
+	scanf("%d %d", &N, &M);
+	dfs(0);
+	return 0;
+}
