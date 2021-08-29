@@ -1,0 +1,21 @@
+import sys
+
+def dfs(depth,idx):
+	if depth == M:
+		for i in range(M):
+			print(ans[i],end=' ')
+		print()
+		return 
+	for i in range(idx,N):
+		if visited[i] == 0:
+			visited[i] = 1
+			ans[depth] = arr[i]
+			dfs(depth+1,i+1)
+			visited[i] = 0
+
+N, M = map(int, sys.stdin.readline().split())
+visited = [0 for _ in range(N+1)]
+ans = [0 for _ in range(M)]
+arr = list(map(int, sys.stdin.readline().split()))
+arr.sort()
+dfs(0,0)
