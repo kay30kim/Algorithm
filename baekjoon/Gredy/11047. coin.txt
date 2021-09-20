@@ -1,0 +1,14 @@
+import sys
+if __name__ == "__main__":
+	N, K = map(int, sys.stdin.readline().split())
+	arr = []
+	ans = 0
+	for _ in range(N):
+		arr.append(int(sys.stdin.readline()))
+	for i in range(N-1,-1,-1):
+		if K//arr[i]!=0:
+			num = K//arr[i]
+			K = K - arr[i]*num
+			ans += num
+		#print(K,ans)
+	print(ans)
