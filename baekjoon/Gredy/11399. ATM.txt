@@ -1,0 +1,13 @@
+import sys
+if __name__ == "__main__":
+	N = int(sys.stdin.readline())
+	arr = list(map(int, sys.stdin.readline().split()))
+	arr.sort()
+
+	ans = 0
+	for i in range(0,N):
+		for j in range(0,i):
+			ans += arr[j]
+		ans += arr[i]
+	print(ans)
+		
