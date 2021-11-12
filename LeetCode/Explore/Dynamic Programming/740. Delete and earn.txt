@@ -1,0 +1,25 @@
+class Solution {
+private:
+    int res[10001];
+    int maxNum;
+public:
+    int deleteAndEarn(vector<int>& nums) {
+        maxNum = 0;
+        for(int i=0; i<10001; i++){
+            res[i] = 0;
+        }
+        for(int i=0; i<nums.size(); i++){
+            res[nums[i]] += nums[i];
+            if(maxNum < nums[i]) maxNum = nums[i];
+        }
+        
+        for(int i=2; i<=maxNum; i++){
+            res[i] = max(res[i] + res[i-2], res[i-1]);
+        }
+        
+        for(int i=0; i<=maxNum; i++){
+            printf("%d ",res[i]);
+        }
+        return res[maxNum];
+    }
+};
