@@ -1,3 +1,4 @@
+/*
 #include <iostream>
 #include <stdio.h>
 using namespace std;
@@ -51,3 +52,4 @@ int main() {
 	printf("dd\n");
 	return 0;
 }
+*/
