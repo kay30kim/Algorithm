@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <cstdlib>
+char str[10000];
+int arr[10000];
+int d[2000];
+int k;
+int minn, maxx;
+int main() {
+	scanf("%s", &str);
+	minn = 987654321;
+	maxx = -1;
+	for (int i = 1; i < 2000; i++) {
+		for (int j = 1; j <= i; j++) {
+			d[i] += j;
+		}
+	}
+	for (int p = 0; str[p]; p++) {
+		int num = 0;
+		while (str[p] && str[p] != ',') {
+			num *= 10;
+			num += str[p] - '0';
+			p++;
+			if (num > maxx) maxx = num;
+			if (num < minn) minn = num;
+		}
+		arr[k++] = num;
+	}
+	unsigned long long dist = 0, ans = 987654321;
+	for (int p = minn; p <= maxx; p++) {
+		dist = 0;
+		for (int i = 0; i < k; i++) {
+			dist += d[abs(p - arr[i])];
+		}
+		if (ans > dist) ans = dist;
+	}
+	printf("\n\n%d\n", ans);	
+	return 0;
+}
