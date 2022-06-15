@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int TMAX = 10000000;
+char str[10000];
+char stack[10000], trash[TMAX];
+int sIdx, tIdx;
+int aIdx;
+unsigned long long arr[100000];
+int main() {
+	for (int i = 0; i < 98; i++) {
+		scanf("%s", &str);
+		char now;
+		bool flag = true;
+		sIdx = 0;
+		for (int j = 0; str[j] && flag; j++) {
+			printf("%c",str[j]);
+			switch (str[j]) {
+			case '(':
+			case '{':
+			case '[': 
+			case '<':
+				if (sIdx < 9999) {
+					stack[sIdx++] = str[j];
+				}
+				break;
+			case ')':
+				if (sIdx == 0) {
+					printf("이런경우\n");
+					break;
+				}
+				now = stack[sIdx - 1];
+				sIdx--;
+				if (now != '(') {
+					trash[tIdx++] = str[j];
+					flag = false;
+					sIdx = 0;
+				}
+				break;
+			case '}':
+				if (sIdx == 0) {
+					printf("이런경우\n");
+					break;
+				}
+				now = stack[sIdx - 1];
+				sIdx--;
+				if (now != '{') {
+					trash[tIdx++] = str[j];
+					flag = false;
+					sIdx = 0;
+				}
+				break;
+			case ']':
+				if (sIdx == 0) {
+					printf("이런경우\n");
+					break;
+				}
+				now = stack[sIdx - 1];
+				sIdx--;
+				if (now != '[') {
+					printf("여기서\n");
+					trash[tIdx++] = str[j];
+					flag = false;
+					sIdx = 0;
+				}
+				break;
+			case '>':
+				if (sIdx == 0) {
+					printf("이런경우\n");
+					break;
+				}
+				now = stack[sIdx - 1];
+				sIdx--;
+				if (now != '<') {
+					trash[tIdx++] = str[j];
+					flag = false;
+					sIdx = 0;
+				}
+				break;
+			default:
+				printf("Debug Assert\n");
+				break;
+			}
+		}
+		printf("\n\n");
+		unsigned long long num2 = 0;/*
+		for (int i = 0; i < sIdx; i++) {
+			printf("%c", stack[i]);
+		}
+		printf("\n");*/
+		if (flag) {
+			for (int i = sIdx-1; i >=0; i--) {
+				num2 *= 5;
+				if (stack[i] == '(') {
+					num2 += 1;
+				}
+				else if (stack[i] == '[') {
+					num2 += 2;
+				}
+				else if (stack[i] == '{') {
+					num2 += 3;
+				}
+				else {
+					num2 += 4;
+				}
+				printf("%lld\n", num2);
+			}
+			arr[aIdx++] = num2;
+		}
+	}
+	sort(arr, arr+aIdx);
+	for (int i = 0; i < aIdx; i++) {
+		printf("%lld\n", arr[i]);
+	}
+	printf("%lld\n", arr[aIdx/2]);
+	return 0;
+}

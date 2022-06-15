@@ -1,0 +1,229 @@
+#include <iostream>
+using namespace std;
+char binNum[1000001];
+char binTmp[1000001];
+int nlen, nTmp, index;
+char hexToBin[16][4] = { {'0','0','0','0'}, {'0','0','0','1'}, {'0','0','1','0'}, {'0','0','1','1'},
+	{'0','1','0','0'}, {'0','1','0','1'}, {'0','1','1','0'}, {'0','1','1','1'},
+	{'1','0','0','0'}, {'1','0','0','1'}, {'1','0','1','0'}, {'1','0','1','1'},
+	{'1','1','0','0'}, {'1','1','0','1'}, {'1','1','1','0'}, {'1','1','1','1'} };
+void HexToBin(char str[]) {
+	for (register int i = 0; str[i]; i++) {
+		int tmp = str[i] - '0';
+		if (tmp >= 10) tmp = str[i] - 'A' + 10;
+		for (register int j = 0; j < 4; j++) {
+			binNum[nlen++] = hexToBin[tmp][j];
+		}
+	}	
+}
+unsigned long long BinToDeci(char str[],int startIdx, int finishIdx) {
+	unsigned long long decimal = 0, idx =1;
+	while (finishIdx>=startIdx) {
+		printf("%c", str[finishIdx]);
+		decimal += (str[finishIdx] - '0') * idx;
+		idx *= 2;
+		finishIdx--;
+	}
+	printf("\n");
+	return decimal;
+}
+unsigned long long DecodeStr(char str[]) {
+	int version = BinToDeci(str, index, index + 2);
+	printf("v = %d\n", version);
+	index += 3;
+	unsigned long long type = BinToDeci(str, index, index + 2);
+	index += 3;
+	nTmp = 0;
+	if (type == 4) { // literal value
+		char liter[10000];
+		int ln = 0;
+		while (str[index] != '0') {
+			for (int i = 1; i < 5; i++) {
+				binTmp[nTmp++] = str[index+i];
+				liter[ln++] = str[index + i];
+			}
+			index += 5;
+		}
+		for (int i = 1; i < 5; i++) {
+			binTmp[nTmp++] = str[index + i];
+			liter[ln++] = str[index + i];
+		}
+		index += 5;
+		unsigned long long num = BinToDeci(liter, 0, ln - 1);
+		printf("liter = %lld\n", num);
+		return num;
+	}
+	else { // operator
+		if (type == 0) {
+			if (str[index] == '1') {
+				index += 1;
+				unsigned long long nSubPackets = BinToDeci(str, index, index + 10);
+				index += 11;
+				unsigned long long num = 0;
+				for (register int i = 0; i < nSubPackets; i++) {
+					num += DecodeStr(str);
+				}
+				return num;
+			}
+			else {
+				index += 1;
+				unsigned long long nLenOfSubPackets = BinToDeci(str, index, index + 14);
+				index += 15;
+				int nowIdx = index;
+				unsigned long long num = 0;
+				while (index < nowIdx + nLenOfSubPackets) {
+					num += DecodeStr(str);
+				}
+				return num;
+			}
+		}
+		else if (type == 1) {
+			if (str[index] == '1') {
+				index += 1;
+				unsigned long long nSubPackets = BinToDeci(str, index, index + 10);
+				index += 11;
+				unsigned long long num = 1;
+				for (register int i = 0; i < nSubPackets; i++) {
+					num *= DecodeStr(str);
+				}
+				return num;
+			}
+			else {
+				index += 1;
+				unsigned long long nLenOfSubPackets = BinToDeci(str, index, index + 14);
+				index += 15;
+				int nowIdx = index;
+				unsigned long long num = 1;
+				while (index < nowIdx + nLenOfSubPackets) {
+					num *= DecodeStr(str);
+				}
+				return num;
+			}
+		}
+		else if (type == 2) {
+			if (str[index] == '1') {
+				index += 1;
+				unsigned long long nSubPackets = BinToDeci(str, index, index + 10);
+				index += 11;
+				unsigned long long num = 987654321;
+				for (register int i = 0; i < nSubPackets; i++) {
+					num = min(num,DecodeStr(str));
+				}
+				return num;
+			}
+			else {
+				index += 1;
+				unsigned long long nLenOfSubPackets = BinToDeci(str, index, index + 14);
+				index += 15;
+				int nowIdx = index;
+				unsigned long long num = 987654321;
+				while (index < nowIdx + nLenOfSubPackets) {
+					num = min(num,DecodeStr(str));
+				}
+				return num;
+			}
+		}
+		else if (type == 3) {
+			if (str[index] == '1') {
+				index += 1;
+				unsigned long long nSubPackets = BinToDeci(str, index, index + 10);
+				index += 11;
+				unsigned long long num = -1;
+				for (register int i = 0; i < nSubPackets; i++) {
+					num = max(num, DecodeStr(str));
+				}
+				return num;
+			}
+			else {
+				index += 1;
+				unsigned long long nLenOfSubPackets = BinToDeci(str, index, index + 14);
+				index += 15;
+				int nowIdx = index;
+				unsigned long long num = -1;
+				while (index < nowIdx + nLenOfSubPackets) {
+					num = max(num, DecodeStr(str));
+				}
+				return num;
+			}
+		}
+		else if (type == 5) {
+			if (str[index] == '1') {
+				index += 1;
+				unsigned long long nSubPackets = BinToDeci(str, index, index + 10);
+				index += 11;
+				unsigned long long num1 = DecodeStr(str);
+				unsigned long long num2 = DecodeStr(str);
+				if (num1 > num2) return 1;
+				else return 0;
+			}
+			else {
+				index += 1;
+				unsigned long long nLenOfSubPackets = BinToDeci(str, index, index + 14);
+				index += 15;
+				int nowIdx = index;
+				unsigned long long num1 = DecodeStr(str);
+				unsigned long long num2 = DecodeStr(str);
+				if (num1 > num2) return 1;
+				else return 0;
+			}
+		}
+		else if (type == 6) {
+			if (str[index] == '1') {
+				index += 1;
+				unsigned long long nSubPackets = BinToDeci(str, index, index + 10);
+				index += 11;
+				unsigned long long num1 = DecodeStr(str);
+				unsigned long long num2 = DecodeStr(str);
+				if (num1 < num2) return 1;
+				else return 0;
+			}
+			else {
+				index += 1;
+				unsigned long long nLenOfSubPackets = BinToDeci(str, index, index + 14);
+				index += 15;
+				int nowIdx = index;
+				unsigned long long num1 = DecodeStr(str);
+				unsigned long long num2 = DecodeStr(str);
+				if (num1 < num2) return 1;
+				else return 0;
+			}
+		}
+		else if (type == 7) {
+			if (str[index] == '1') {
+				index += 1;
+				unsigned long long nSubPackets = BinToDeci(str, index, index + 10);
+				index += 11;
+				unsigned long long num1 = DecodeStr(str);
+				unsigned long long num2 = DecodeStr(str);
+				if (num1 == num2) return 1;
+				else return 0;
+			}
+			else {
+				index += 1;
+				unsigned long long nLenOfSubPackets = BinToDeci(str, index, index + 14);
+				index += 15;
+				int nowIdx = index;
+				unsigned long long num1 = DecodeStr(str);
+				unsigned long long num2 = DecodeStr(str);
+				if (num1 == num2) return 1;
+				else return 0;
+			}
+		}
+		else {
+			printf("Debug Eroor\n=====================================\n");
+		}
+		return version;
+	}
+}
+int main() {
+	char str[10001];
+	scanf("%s", &str);
+	HexToBin(str);
+	printf("%d\n", nlen);
+	for (register int i = 0; i < nlen; i++) {
+		printf("%c", binNum[i]);
+	}
+	printf("\n");
+	printf("%lld\n",DecodeStr(binNum));
+	return 0;
+}
